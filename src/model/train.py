@@ -4,17 +4,16 @@ import glob
 import os
 
 import pandas as pd
+import mlflow
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from azureml.core import Run
 
 
 # define functions
 def main(args):
     # enable autologging
-    run = Run.get_context()
-    run.log("Regularization Rate", args.reg_rate)
+    mlflow.autolog()
 
     # read data
     df = get_csvs_df(args.training_data)
@@ -48,10 +47,6 @@ def train_model(reg_rate, X_train, X_test, y_train, y_test):
     # train model
     model = LogisticRegression(C=1/reg_rate, solver="liblinear")
     model.fit(X_train, y_train)
-
-    # log metrics
-    run = Run.get_context()
-    run.log("Accuracy", model.score(X_test, y_test))
 
 
 def parse_args():
